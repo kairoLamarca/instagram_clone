@@ -1,0 +1,36 @@
+[
+    {
+        "_id": "59f9e630d994c22bb89d3929",
+        "titulo": "Oi",
+        "url_imagem": "oi.png"
+    },
+    {
+        "_id": "59f9e694fbfe8e2a88a1d593",
+        "titulo": "Bye",
+        "url_imagem": "oi.png"
+    },
+    {
+        "_id": "59f9e8ed02fba21b08993768",
+        "titulo": "Tchau",
+        "url_imagem": "tchau.png"
+    }
+]
+
+GET
+localhost:8080/api/
+
+POST
+localhost:8080/api/
+{
+    "titulo": "Oi",
+    "url_imagem": "oi.png"
+}
+
+GET
+localhost:8080/api/59f9e694fbfe8e2a88a1d593
+
+PUT
+localhost:8080/api/59f9e694fbfe8e2a88a1d593
+{
+    "titulo": "Bye"
+}

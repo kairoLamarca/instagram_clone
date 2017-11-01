@@ -1,7 +1,7 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
     mongodb = require('mongodb');
-    objectId = require('mongodb').ObjectId;
+objectId = require('mongodb').ObjectId;
 
 const app = express();
 
@@ -71,6 +71,27 @@ app.get('/api/:id', (req, res) => {
                 }
                 mongoclient.close();
             });
+        });
+    });
+});
+
+//PUT by ID (update)
+app.put('/api/:id', (req, res) => {
+    db.open((err, mongoclient) => {
+        mongoclient.collection('postagens', (err, collection) => {
+            collection.update(
+                { _id: objectId(req.params.id) },
+                { $set: { titulo: req.body.titulo } },
+                {},
+                (err, records) => {
+                    if(err){
+                        res.json(err);
+                    } else{
+                        res.json(records);
+                    }
+                    mongoclient.close();
+                }
+            );
         });
     });
 });
