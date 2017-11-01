@@ -29,12 +29,28 @@ app.get('/', (req, res) => {
 app.post('/api', (req, res) => {
     let dados = req.body;
     db.open((err, mongoclient) => {
-        mongoclient.collection('postagens', (err, collection) =>{
-            collection.insert(dados, (err, records) =>{
+        mongoclient.collection('postagens', (err, collection) => {
+            collection.insert(dados, (err, records) => {
+                if (err) {
+                    res.json({ 'status': 'erro' });
+                } else {
+                    res.json({ 'status': 'inclusão realizada com sucesso' });
+                }
+                mongoclient.close();
+            });
+        });
+    });
+});
+
+//GET (ready)
+app.get('/api', (req, res) => {
+    db.open((err, mongoclient) => {
+        mongoclient.collection('postagens', (err, collection) => {
+            collection.find().toArray((err, results) => {
                 if(err){
-                    res.json({'status': 'erro'});
-                }else{
-                    res.json({'status': 'inclusão realizada com sucesso'});
+                    res.json(err);
+                } else{
+                    res.json(results);
                 }
                 mongoclient.close();
             });
