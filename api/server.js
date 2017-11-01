@@ -1,6 +1,7 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
     mongodb = require('mongodb');
+    objectId = require('mongodb').ObjectId;
 
 const app = express();
 
@@ -47,9 +48,25 @@ app.get('/api', (req, res) => {
     db.open((err, mongoclient) => {
         mongoclient.collection('postagens', (err, collection) => {
             collection.find().toArray((err, results) => {
-                if(err){
+                if (err) {
                     res.json(err);
-                } else{
+                } else {
+                    res.json(results);
+                }
+                mongoclient.close();
+            });
+        });
+    });
+});
+
+//GET by ID (ready)
+app.get('/api/:id', (req, res) => {
+    db.open((err, mongoclient) => {
+        mongoclient.collection('postagens', (err, collection) => {
+            collection.find(objectId(req.params.id)).toArray((err, results) => {//find({ _id: req.params.id}) é a mesma coisa
+                if (err) {
+                    res.json(err);
+                } else {
                     res.json(results);
                 }
                 mongoclient.close();
