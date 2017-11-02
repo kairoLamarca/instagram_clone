@@ -1,13 +1,15 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
+    multiParty = require('connect-multiparty'),
     mongodb = require('mongodb');
-objectId = require('mongodb').ObjectId;
+    objectId = require('mongodb').ObjectId;
 
 const app = express();
 
 //body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(multiParty());//para a aplicação aceitar forms multipart/formdata
 
 const port = 8080;
 
@@ -28,7 +30,17 @@ app.get('/', (req, res) => {
 //URI + verbo HTTP
 //POST (create)
 app.post('/api', (req, res) => {
+
+    //res.setHeader("Access-Control-Allow-Origin", "http://localhost:80"); //permite acesso somente para essa aplicação
+    res.setHeader("Access-Control-Allow-Origin", "*"); //permite acesso para qualquer aplicação
+
     let dados = req.body;
+
+    console.log(dados);
+
+    res.send(dados);
+
+    /*
     db.open((err, mongoclient) => {
         mongoclient.collection('postagens', (err, collection) => {
             collection.insert(dados, (err, records) => {
@@ -41,6 +53,7 @@ app.post('/api', (req, res) => {
             });
         });
     });
+    */
 });
 
 //GET (ready)
