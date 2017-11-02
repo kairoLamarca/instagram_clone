@@ -65,9 +65,9 @@ app.get('/api/:id', (req, res) => {
         mongoclient.collection('postagens', (err, collection) => {
             collection.find(objectId(req.params.id)).toArray((err, results) => {//find({ _id: req.params.id}) é a mesma coisa
                 if (err) {
-                    res.json(err);
+                    res.status(500).json(err);
                 } else {
-                    res.json(results);
+                    res.status(200).json(results);
                 }
                 mongoclient.close();
             });
@@ -84,14 +84,30 @@ app.put('/api/:id', (req, res) => {
                 { $set: { titulo: req.body.titulo } },
                 {},
                 (err, records) => {
-                    if(err){
+                    if (err) {
                         res.json(err);
-                    } else{
+                    } else {
                         res.json(records);
                     }
                     mongoclient.close();
                 }
             );
+        });
+    });
+});
+
+//DELETE by ID (remover)
+app.delete('/api/:id', (req, res) => {
+    db.open((err, mongoclient) => {
+        mongoclient.collection('postagens', (err, collection) => {
+            collection.remove({ _id: objectId(req.params.id) }, (err, records) => {
+                if (err) {
+                    res.json(err);
+                } else {
+                    res.json(records);
+                }
+                mongoclient.close();
+            });
         });
     });
 });
