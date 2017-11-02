@@ -28,6 +28,32 @@
 					return false;
 				});
 
+				$('#btn-publicar').click(()=>{
+					//criar um formData
+					let formData = new FormData(); //chave=valor
+
+					let arquivo = document.getElementById("arquivo").files[0];
+					let titulo = document.getElementById("titulo").value;
+
+					formData.append("arquivo", arquivo);
+					formData.append("titulo", titulo);
+
+					//criar cmlhttprequest
+					let xhr = new XMLHttpRequest();
+
+					//verificar as mudanças de estado
+					xhr.onreadystatechange = function(){
+						if(xhr.readyState == 4){
+							let resposta = xhr.responseText;
+							document.getElementById('mensagem').innerHTML = resposta;
+						}
+					}
+
+					//fazer o envio do nosso request
+					xhr.open("POST", "http://localhost:8080/api");
+					xhr.send(formData);
+				});
+
 			});
 		</script>
 
