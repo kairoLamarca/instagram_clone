@@ -1,8 +1,10 @@
 const express = require('express'),
     bodyParser = require('body-parser'),
     multiParty = require('connect-multiparty'),
-    mongodb = require('mongodb');
-    objectId = require('mongodb').ObjectId;
+    mongodb = require('mongodb'),
+    objectId = require('mongodb').ObjectId,
+    fs = require('fs'),
+    fsx = require('fs-extra');
 
 const app = express();
 
@@ -34,26 +36,38 @@ app.post('/api', (req, res) => {
     //res.setHeader("Access-Control-Allow-Origin", "http://localhost:80"); //permite acesso somente para essa aplicação
     res.setHeader("Access-Control-Allow-Origin", "*"); //permite acesso para qualquer aplicação
 
-    let dados = req.body;
+    let date = new Date();
+    let time_stamp = date.getTime();
 
-    console.log(dados);
+    let url_imagem = time_stamp + '_' + req.files.arquivo.originalFilename;
+    let path_origem = req.files.arquivo.path;
+    let path_destino = './uploads/' + url_imagem;
 
-    res.send(dados);
+    fsx.move(path_origem, path_destino, function(err){
+        if(err){
+            res.status(500).json({ error : err });
+            return;
+        }
 
-    /*
-    db.open((err, mongoclient) => {
-        mongoclient.collection('postagens', (err, collection) => {
-            collection.insert(dados, (err, records) => {
-                if (err) {
-                    res.json({ 'status': 'erro' });
-                } else {
-                    res.json({ 'status': 'inclusão realizada com sucesso' });
-                }
-                mongoclient.close();
+        var dados = {
+            url_imagem: url_imagem,
+            titulo: req.body.titulo
+        }
+
+        db.open(function(err, mongoclient){
+            mongoclient.collection('postagens', function(err, collection){
+                collection.insert(dados, function(err, records){
+                    if(err){
+                        res.json({'status': 'erro'});
+                    }else{
+                        res.json({'status': 'inclusao realizada com sucesso'});
+                    }
+                    mongoclient.close();
+                });
             });
         });
+
     });
-    */
 });
 
 //GET (ready)
