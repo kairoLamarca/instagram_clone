@@ -43,9 +43,9 @@ app.post('/api', (req, res) => {
     let path_origem = req.files.arquivo.path;
     let path_destino = './uploads/' + url_imagem;
 
-    fsx.move(path_origem, path_destino, function(err){
-        if(err){
-            res.status(500).json({ error : err });
+    fsx.move(path_origem, path_destino, function (err) {
+        if (err) {
+            res.status(500).json({ error: err });
             return;
         }
 
@@ -54,13 +54,13 @@ app.post('/api', (req, res) => {
             titulo: req.body.titulo
         }
 
-        db.open(function(err, mongoclient){
-            mongoclient.collection('postagens', function(err, collection){
-                collection.insert(dados, function(err, records){
-                    if(err){
-                        res.json({'status': 'erro'});
-                    }else{
-                        res.json({'status': 'inclusao realizada com sucesso'});
+        db.open(function (err, mongoclient) {
+            mongoclient.collection('postagens', function (err, collection) {
+                collection.insert(dados, function (err, records) {
+                    if (err) {
+                        res.json({ 'status': 'erro' });
+                    } else {
+                        res.json({ 'status': 'inclusao realizada com sucesso' });
                     }
                     mongoclient.close();
                 });
@@ -74,7 +74,7 @@ app.post('/api', (req, res) => {
 app.get('/api', (req, res) => {
 
     res.setHeader("Access-Control-Allow-Origin", "*");
-    
+
     db.open((err, mongoclient) => {
         mongoclient.collection('postagens', (err, collection) => {
             collection.find().toArray((err, results) => {
@@ -104,6 +104,23 @@ app.get('/api/:id', (req, res) => {
         });
     });
 });
+
+app.get('/imagens/:imagem', (req, res) => {
+
+    let img = req.params.imagem;
+
+    fs.readFile('./uploads/' + img, (err, content) => {
+        if (err) {
+            res.status(400).json(err);
+            return;
+        }
+
+        //mesma coisa que o setHeader
+        res.writeHead(200, { 'content-type': 'image/jpg' })
+
+        res.end(content);
+    });
+})
 
 //PUT by ID (update)
 app.put('/api/:id', (req, res) => {
