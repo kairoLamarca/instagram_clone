@@ -65,7 +65,7 @@ app.get('/api/:id', (req, res) => {
         mongoclient.collection('postagens', (err, collection) => {
             collection.find(objectId(req.params.id)).toArray((err, results) => {//find({ _id: req.params.id}) é a mesma coisa
                 if (err) {
-                    res.status(500).json(err);
+                    res.status(500).json(err);//Internal Server Error
                 } else {
                     res.status(200).json(results);
                 }
