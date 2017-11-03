@@ -139,7 +139,8 @@ app.put('/api/:id', (req, res) => {
         mongoclient.collection('postagens', (err, collection) => {
             collection.update(
                 { _id: objectId(req.params.id) },
-                { $push: 
+                {
+                    $push:
                     {
                         comentarios: {
                             id_comentario: new objectId(),
@@ -164,16 +165,27 @@ app.put('/api/:id', (req, res) => {
 
 //DELETE by ID (remover)
 app.delete('/api/:id', (req, res) => {
+
     db.open((err, mongoclient) => {
         mongoclient.collection('postagens', (err, collection) => {
-            collection.remove({ _id: objectId(req.params.id) }, (err, records) => {
-                if (err) {
-                    res.json(err);
-                } else {
-                    res.json(records);
+            collection.update(
+                {},
+                {
+                    $pull: {
+                        comentarios: { id_comentario: objectId(req.params.id) }
+                    }
+                },
+                { multi: true },
+                (err, records) => {
+                    if (err) {
+                        res.json(err);
+                    } else {
+                        res.json(records);
+                    }
+                    mongoclient.close();
                 }
-                mongoclient.close();
-            });
+            );
         });
     });
+
 });
