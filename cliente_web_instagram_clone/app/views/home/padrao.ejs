@@ -34,9 +34,32 @@
 											data[i].titulo + 
 										'</span>' +
 										'<img src="http://localhost:8080/imagens/' + data[i].url_imagem + '" />' +
+										'<div class="comentar">' + 
+											'<input type="text" class="form-control input_comentario" id="postagem_' + data[i]._id + '" placholder="Adicione um comentário...">' + 
+											'<button class="btn btn-default btn_postagem" value="' + data[i]._id + '" type="button">Comentar</button>' +
+										'</div>' +
 									'</div>'
 								);
-							}
+							};
+
+							$('.btn_postagem').click(function() {
+								let id = this.value;
+								let id_input_comentario = 'postagem_'+ id;
+								let comentario = $('#'+ id_input_comentario).val();
+
+								let xhr = new XMLHttpRequest();
+								xhr.open('PUT', 'http://localhost:8080/api/' + id)
+								xhr.setRequestHeader('Content-Type', 'application/json');
+
+								xhr.onload = function(){
+									if(xhr.status === 200){
+										window.location.href = '/home';
+									}
+								}
+
+								xhr.send(JSON.stringify({ comentario:  comentario }));
+
+							});
 						}
 					};
 
@@ -45,18 +68,18 @@
 
 				carrega_postagens();
 
-				$('#btn_incluir').click(function(){
+				$('#btn_incluir').click(function() {
 					$('#container_timeline').hide();
 					$('#container_form').show();
 				});
 
-				$('#btn-cancelar-publicacao').click(function(){
+				$('#btn-cancelar-publicacao').click(function() {
 					$('#container_timeline').show();
 					$('#container_form').hide();
 					return false;
 				});
 
-				$('#btn-publicar').click(()=>{
+				$('#btn-publicar').click(function() {
 					//criar um formData
 					let formData = new FormData(); //chave=valor
 

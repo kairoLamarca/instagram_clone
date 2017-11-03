@@ -13,6 +13,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(multiParty());//para a aplicação aceitar forms multipart/formdata
 
+app.use((req, res, next) => {
+
+    res.setHeader("Access-Control-Allow-Origin", "*");//permite acesso para qualquer aplicação(dominio)
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");//Configurar metodos que a origem pode requisitar
+    res.setHeader("Access-Control-Allow-Headers", "content-type");//Habilitar que a req da origem tenha cabeçalhos reescritos
+    res.setHeader("Access-Control-Allow-Credentials", true);//
+
+    next();
+})
+
 const port = 8080;
 
 app.listen(port)
@@ -34,7 +44,7 @@ app.get('/', (req, res) => {
 app.post('/api', (req, res) => {
 
     //res.setHeader("Access-Control-Allow-Origin", "http://localhost:80"); //permite acesso somente para essa aplicação
-    res.setHeader("Access-Control-Allow-Origin", "*"); //permite acesso para qualquer aplicação
+    //res.setHeader("Access-Control-Allow-Origin", "*"); //permite acesso para qualquer aplicação
 
     let date = new Date();
     let time_stamp = date.getTime();
@@ -73,7 +83,7 @@ app.post('/api', (req, res) => {
 //GET (ready)
 app.get('/api', (req, res) => {
 
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    //res.setHeader("Access-Control-Allow-Origin", "*");
 
     db.open((err, mongoclient) => {
         mongoclient.collection('postagens', (err, collection) => {
@@ -124,11 +134,19 @@ app.get('/imagens/:imagem', (req, res) => {
 
 //PUT by ID (update)
 app.put('/api/:id', (req, res) => {
+
     db.open((err, mongoclient) => {
         mongoclient.collection('postagens', (err, collection) => {
             collection.update(
                 { _id: objectId(req.params.id) },
-                { $set: { titulo: req.body.titulo } },
+                { $push: 
+                    {
+                        comentarios: {
+                            id_comentario: new objectId(),
+                            comentario: req.body.comentario
+                        }
+                    }
+                },//inclui um item em um array
                 {},
                 (err, records) => {
                     if (err) {
@@ -141,6 +159,7 @@ app.put('/api/:id', (req, res) => {
             );
         });
     });
+
 });
 
 //DELETE by ID (remover)
